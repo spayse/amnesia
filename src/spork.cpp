@@ -1,5 +1,5 @@
 // Copyright (c) 2014-2016 The Dash developers
-// Copyright (c) 2016-2017 The PIVX developers
+// Copyright (c) 2016-2017 The hello developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,7 +8,6 @@
 #include "key.h"
 #include "main.h"
 #include "masternode-budget.h"
-#include "masternode-helpers.h"
 #include "net.h"
 #include "protocol.h"
 #include "sync.h"
@@ -27,7 +26,7 @@ CSporkManager sporkManager;
 std::map<uint256, CSporkMessage> mapSporks;
 std::map<int, CSporkMessage> mapSporksActive;
 
-// AMNZ: on startup load spork values from previous session if they exist in the sporkDB
+// hello: on startup load spork values from previous session if they exist in the sporkDB
 void LoadSporksFromDB()
 {
     for (int i = SPORK_START; i <= SPORK_END; ++i) {
@@ -60,7 +59,7 @@ void LoadSporksFromDB()
 
 void ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
-    if (fLiteMode) return; //disable all masternode related functionality
+    if (fLiteMode) return; //disable all obfuscation/masternode related functionality
 
     if (strCommand == "spork") {
         //LogPrintf("ProcessSpork::spork\n");
@@ -96,7 +95,7 @@ void ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
         mapSporksActive[spork.nSporkID] = spork;
         sporkManager.Relay(spork);
 
-        // AMNZ: add to spork database.
+        // hello: add to spork database.
         pSporkDB->WriteSpork(spork.nSporkID, spork);
     }
     if (strCommand == "getsporks") {
@@ -125,33 +124,11 @@ int64_t GetSporkValue(int nSporkID)
         if (nSporkID == SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT) r = SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT_DEFAULT;
         if (nSporkID == SPORK_9_MASTERNODE_BUDGET_ENFORCEMENT) r = SPORK_9_MASTERNODE_BUDGET_ENFORCEMENT_DEFAULT;
         if (nSporkID == SPORK_10_MASTERNODE_PAY_UPDATED_NODES) r = SPORK_10_MASTERNODE_PAY_UPDATED_NODES_DEFAULT;
-        if (nSporkID == SPORK_11_RESET_BUDGET) r = SPORK_11_RESET_BUDGET_DEFAULT;
-        if (nSporkID == SPORK_12_RECONSIDER_BLOCKS) r = SPORK_12_RECONSIDER_BLOCKS_DEFAULT;
+        if (nSporkID == SPORK_11_LOCK_INVALID_UTXO) r = SPORK_11_LOCK_INVALID_UTXO_DEFAULT;
         if (nSporkID == SPORK_13_ENABLE_SUPERBLOCKS) r = SPORK_13_ENABLE_SUPERBLOCKS_DEFAULT;
         if (nSporkID == SPORK_14_NEW_PROTOCOL_ENFORCEMENT) r = SPORK_14_NEW_PROTOCOL_ENFORCEMENT_DEFAULT;
         if (nSporkID == SPORK_15_NEW_PROTOCOL_ENFORCEMENT_2) r = SPORK_15_NEW_PROTOCOL_ENFORCEMENT_2_DEFAULT;
-        if (nSporkID == SPORK_16_MN_WINNER_MINIMUM_AGE) r = SPORK_16_MN_WINNER_MINIMUM_AGE_DEFAULT;
-        if (nSporkID == SPORK_17_REWARDS_SWITCH) r = SPORK_17_REWARDS_SWITCH_DEFAULT;
-        if (nSporkID == SPORK_18_CURRENT_MN_COLLATERAL) r = SPORK_18_CURRENT_MN_COLLATERAL_DEFAULT;
-        if (nSporkID == SPORK_19_3000_COLLATERAL_BLOCK) r = SPORK_19_3000_COLLATERAL_BLOCK_DEFAULT;
-        if (nSporkID == SPORK_20_4000_COLLATERAL_BLOCK) r = SPORK_20_4000_COLLATERAL_BLOCK_DEFAULT;
-        if (nSporkID == SPORK_21_4200_COLLATERAL_BLOCK) r = SPORK_21_4200_COLLATERAL_BLOCK_DEFAULT;
-        if (nSporkID == SPORK_22_4550_COLLATERAL_BLOCK) r = SPORK_22_4550_COLLATERAL_BLOCK_DEFAULT;
-        if (nSporkID == SPORK_23_4750_COLLATERAL_BLOCK) r = SPORK_23_4750_COLLATERAL_BLOCK_DEFAULT;
-        if (nSporkID == SPORK_24_4950_COLLATERAL_BLOCK) r = SPORK_24_4950_COLLATERAL_BLOCK_DEFAULT;
-        if (nSporkID == SPORK_25_5150_COLLATERAL_BLOCK) r = SPORK_25_5150_COLLATERAL_BLOCK_DEFAULT;
-        if (nSporkID == SPORK_26_5350_COLLATERAL_BLOCK) r = SPORK_26_5350_COLLATERAL_BLOCK_DEFAULT;
-        if (nSporkID == SPORK_27_5600_COLLATERAL_BLOCK) r = SPORK_27_5600_COLLATERAL_BLOCK_DEFAULT;
-        if (nSporkID == SPORK_28_5850_COLLATERAL_BLOCK) r = SPORK_28_5850_COLLATERAL_BLOCK_DEFAULT;
-        if (nSporkID == SPORK_29_6150_COLLATERAL_BLOCK) r = SPORK_29_6150_COLLATERAL_BLOCK_DEFAULT;
-        if (nSporkID == SPORK_30_6400_COLLATERAL_BLOCK) r = SPORK_30_6400_COLLATERAL_BLOCK_DEFAULT;
-        if (nSporkID == SPORK_31_6750_COLLATERAL_BLOCK) r = SPORK_31_6750_COLLATERAL_BLOCK_DEFAULT;
-        if (nSporkID == SPORK_32_7050_COLLATERAL_BLOCK) r = SPORK_32_7050_COLLATERAL_BLOCK_DEFAULT;
-        if (nSporkID == SPORK_33_7400_COLLATERAL_BLOCK) r = SPORK_33_7400_COLLATERAL_BLOCK_DEFAULT;
-        if (nSporkID == SPORK_34_7800_COLLATERAL_BLOCK) r = SPORK_34_7800_COLLATERAL_BLOCK_DEFAULT;
-        if (nSporkID == SPORK_35_8200_COLLATERAL_BLOCK) r = SPORK_35_8200_COLLATERAL_BLOCK_DEFAULT;
-        if (nSporkID == SPORK_36_8600_COLLATERAL_BLOCK) r = SPORK_36_8600_COLLATERAL_BLOCK_DEFAULT;
-        if (nSporkID == SPORK_37_9200_COLLATERAL_BLOCK) r = SPORK_37_9200_COLLATERAL_BLOCK_DEFAULT;
+        if (nSporkID == SPORK_16_ZEROCOIN_MAINTENANCE_MODE) r = SPORK_16_ZEROCOIN_MAINTENANCE_MODE_DEFAULT;
 
         if (r == -1) LogPrintf("GetSpork::Unknown Spork %d\n", nSporkID);
     }
@@ -166,6 +143,7 @@ bool IsSporkActive(int nSporkID)
     if (r == -1) return false;
     return r < GetTime();
 }
+
 
 void ReprocessBlocks(int nBlocks)
 {
@@ -204,7 +182,7 @@ bool CSporkManager::CheckSignature(CSporkMessage& spork)
     std::string strMessage = boost::lexical_cast<std::string>(spork.nSporkID) + boost::lexical_cast<std::string>(spork.nValue) + boost::lexical_cast<std::string>(spork.nTimeSigned);
     CPubKey pubkeynew(ParseHex(Params().SporkKey()));
     std::string errorMessage = "";
-    if (masternodeSigner.VerifyMessage(pubkeynew, spork.vchSig, strMessage, errorMessage)) {
+    if (obfuScationSigner.VerifyMessage(pubkeynew, spork.vchSig, strMessage, errorMessage)) {
         return true;
     }
 
@@ -219,17 +197,17 @@ bool CSporkManager::Sign(CSporkMessage& spork)
     CPubKey pubkey2;
     std::string errorMessage = "";
 
-    if (!masternodeSigner.SetKey(strMasterPrivKey, errorMessage, key2, pubkey2)) {
+    if (!obfuScationSigner.SetKey(strMasterPrivKey, errorMessage, key2, pubkey2)) {
         LogPrintf("CMasternodePayments::Sign - ERROR: Invalid masternodeprivkey: '%s'\n", errorMessage);
         return false;
     }
 
-    if (!masternodeSigner.SignMessage(strMessage, errorMessage, spork.vchSig, key2)) {
+    if (!obfuScationSigner.SignMessage(strMessage, errorMessage, spork.vchSig, key2)) {
         LogPrintf("CMasternodePayments::Sign - Sign message failed");
         return false;
     }
 
-    if (!masternodeSigner.VerifyMessage(pubkey2, spork.vchSig, strMessage, errorMessage)) {
+    if (!obfuScationSigner.VerifyMessage(pubkey2, spork.vchSig, strMessage, errorMessage)) {
         LogPrintf("CMasternodePayments::Sign - Verify message failed");
         return false;
     }
@@ -286,33 +264,11 @@ int CSporkManager::GetSporkIDByName(std::string strName)
     if (strName == "SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT") return SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT;
     if (strName == "SPORK_9_MASTERNODE_BUDGET_ENFORCEMENT") return SPORK_9_MASTERNODE_BUDGET_ENFORCEMENT;
     if (strName == "SPORK_10_MASTERNODE_PAY_UPDATED_NODES") return SPORK_10_MASTERNODE_PAY_UPDATED_NODES;
-    if (strName == "SPORK_11_RESET_BUDGET") return SPORK_11_RESET_BUDGET;
-    if (strName == "SPORK_12_RECONSIDER_BLOCKS") return SPORK_12_RECONSIDER_BLOCKS;
+    if (strName == "SPORK_11_LOCK_INVALID_UTXO") return SPORK_11_LOCK_INVALID_UTXO;
     if (strName == "SPORK_13_ENABLE_SUPERBLOCKS") return SPORK_13_ENABLE_SUPERBLOCKS;
     if (strName == "SPORK_14_NEW_PROTOCOL_ENFORCEMENT") return SPORK_14_NEW_PROTOCOL_ENFORCEMENT;
     if (strName == "SPORK_15_NEW_PROTOCOL_ENFORCEMENT_2") return SPORK_15_NEW_PROTOCOL_ENFORCEMENT_2;
-    if (strName == "SPORK_16_MN_WINNER_MINIMUM_AGE") return SPORK_16_MN_WINNER_MINIMUM_AGE;
-    if (strName == "SPORK_17_REWARDS_SWITCH") return SPORK_17_REWARDS_SWITCH;
-    if (strName == "SPORK_18_CURRENT_MN_COLLATERAL") return SPORK_18_CURRENT_MN_COLLATERAL;
-    if (strName == "SPORK_19_3000_COLLATERAL_BLOCK") return SPORK_19_3000_COLLATERAL_BLOCK;
-    if (strName == "SPORK_20_4000_COLLATERAL_BLOCK") return SPORK_20_4000_COLLATERAL_BLOCK;
-    if (strName == "SPORK_21_4200_COLLATERAL_BLOCK") return SPORK_21_4200_COLLATERAL_BLOCK;
-    if (strName == "SPORK_22_4550_COLLATERAL_BLOCK") return SPORK_22_4550_COLLATERAL_BLOCK;
-    if (strName == "SPORK_23_4750_COLLATERAL_BLOCK") return SPORK_23_4750_COLLATERAL_BLOCK;
-    if (strName == "SPORK_24_4950_COLLATERAL_BLOCK") return SPORK_24_4950_COLLATERAL_BLOCK;
-    if (strName == "SPORK_25_5150_COLLATERAL_BLOCK") return SPORK_25_5150_COLLATERAL_BLOCK;
-    if (strName == "SPORK_26_5350_COLLATERAL_BLOCK") return SPORK_26_5350_COLLATERAL_BLOCK;
-    if (strName == "SPORK_27_5600_COLLATERAL_BLOCK") return SPORK_27_5600_COLLATERAL_BLOCK;
-    if (strName == "SPORK_28_5850_COLLATERAL_BLOCK") return SPORK_28_5850_COLLATERAL_BLOCK;
-    if (strName == "SPORK_29_6150_COLLATERAL_BLOCK") return SPORK_29_6150_COLLATERAL_BLOCK;
-    if (strName == "SPORK_30_6400_COLLATERAL_BLOCK") return SPORK_30_6400_COLLATERAL_BLOCK;
-    if (strName == "SPORK_31_6750_COLLATERAL_BLOCK") return SPORK_31_6750_COLLATERAL_BLOCK;
-    if (strName == "SPORK_32_7050_COLLATERAL_BLOCK") return SPORK_32_7050_COLLATERAL_BLOCK;
-    if (strName == "SPORK_33_7400_COLLATERAL_BLOCK") return SPORK_33_7400_COLLATERAL_BLOCK;
-    if (strName == "SPORK_34_7800_COLLATERAL_BLOCK") return SPORK_34_7800_COLLATERAL_BLOCK;
-    if (strName == "SPORK_35_8200_COLLATERAL_BLOCK") return SPORK_35_8200_COLLATERAL_BLOCK;
-    if (strName == "SPORK_36_8600_COLLATERAL_BLOCK") return SPORK_36_8600_COLLATERAL_BLOCK;
-    if (strName == "SPORK_37_9200_COLLATERAL_BLOCK") return SPORK_37_9200_COLLATERAL_BLOCK;
+    if (strName == "SPORK_16_ZEROCOIN_MAINTENANCE_MODE") return SPORK_16_ZEROCOIN_MAINTENANCE_MODE;
 
     return -1;
 }
@@ -326,33 +282,11 @@ std::string CSporkManager::GetSporkNameByID(int id)
     if (id == SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT) return "SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT";
     if (id == SPORK_9_MASTERNODE_BUDGET_ENFORCEMENT) return "SPORK_9_MASTERNODE_BUDGET_ENFORCEMENT";
     if (id == SPORK_10_MASTERNODE_PAY_UPDATED_NODES) return "SPORK_10_MASTERNODE_PAY_UPDATED_NODES";
-    if (id == SPORK_11_RESET_BUDGET) return "SPORK_11_RESET_BUDGET";
-    if (id == SPORK_12_RECONSIDER_BLOCKS) return "SPORK_12_RECONSIDER_BLOCKS";
+    if (id == SPORK_11_LOCK_INVALID_UTXO) return "SPORK_11_LOCK_INVALID_UTXO";
     if (id == SPORK_13_ENABLE_SUPERBLOCKS) return "SPORK_13_ENABLE_SUPERBLOCKS";
     if (id == SPORK_14_NEW_PROTOCOL_ENFORCEMENT) return "SPORK_14_NEW_PROTOCOL_ENFORCEMENT";
     if (id == SPORK_15_NEW_PROTOCOL_ENFORCEMENT_2) return "SPORK_15_NEW_PROTOCOL_ENFORCEMENT_2";
-    if (id == SPORK_16_MN_WINNER_MINIMUM_AGE) return "SPORK_16_MN_WINNER_MINIMUM_AGE";
-    if (id == SPORK_17_REWARDS_SWITCH) return "SPORK_17_REWARDS_SWITCH";
-    if (id == SPORK_18_CURRENT_MN_COLLATERAL) return "SPORK_18_CURRENT_MN_COLLATERAL";
-    if (id == SPORK_19_3000_COLLATERAL_BLOCK) return "SPORK_19_3000_COLLATERAL_BLOCK";
-    if (id == SPORK_20_4000_COLLATERAL_BLOCK) return "SPORK_20_4000_COLLATERAL_BLOCK";
-    if (id == SPORK_21_4200_COLLATERAL_BLOCK) return "SPORK_21_4200_COLLATERAL_BLOCK";
-    if (id == SPORK_22_4550_COLLATERAL_BLOCK) return "SPORK_22_4550_COLLATERAL_BLOCK";
-    if (id == SPORK_23_4750_COLLATERAL_BLOCK) return "SPORK_23_4750_COLLATERAL_BLOCK";
-    if (id == SPORK_24_4950_COLLATERAL_BLOCK) return "SPORK_24_4950_COLLATERAL_BLOCK";
-    if (id == SPORK_25_5150_COLLATERAL_BLOCK) return "SPORK_25_5150_COLLATERAL_BLOCK";
-    if (id == SPORK_26_5350_COLLATERAL_BLOCK) return "SPORK_26_5350_COLLATERAL_BLOCK";
-    if (id == SPORK_27_5600_COLLATERAL_BLOCK) return "SPORK_27_5600_COLLATERAL_BLOCK";
-    if (id == SPORK_28_5850_COLLATERAL_BLOCK) return "SPORK_28_5850_COLLATERAL_BLOCK";
-    if (id == SPORK_29_6150_COLLATERAL_BLOCK) return "SPORK_29_6150_COLLATERAL_BLOCK";
-    if (id == SPORK_30_6400_COLLATERAL_BLOCK) return "SPORK_30_6400_COLLATERAL_BLOCK";
-    if (id == SPORK_31_6750_COLLATERAL_BLOCK) return "SPORK_31_6750_COLLATERAL_BLOCK";
-    if (id == SPORK_32_7050_COLLATERAL_BLOCK) return "SPORK_32_7050_COLLATERAL_BLOCK";
-    if (id == SPORK_33_7400_COLLATERAL_BLOCK) return "SPORK_33_7400_COLLATERAL_BLOCK";
-    if (id == SPORK_34_7800_COLLATERAL_BLOCK) return "SPORK_34_7800_COLLATERAL_BLOCK";
-    if (id == SPORK_35_8200_COLLATERAL_BLOCK) return "SPORK_35_8200_COLLATERAL_BLOCK";
-    if (id == SPORK_36_8600_COLLATERAL_BLOCK) return "SPORK_36_8600_COLLATERAL_BLOCK";
-    if (id == SPORK_37_9200_COLLATERAL_BLOCK) return "SPORK_37_9200_COLLATERAL_BLOCK";
+    if (id == SPORK_16_ZEROCOIN_MAINTENANCE_MODE) return "SPORK_16_ZEROCOIN_MAINTENANCE_MODE";
 
     return "Unknown";
 }

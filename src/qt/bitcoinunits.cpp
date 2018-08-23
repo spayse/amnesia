@@ -1,7 +1,7 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
-// Copyright (c) 2017-2017 The Amnesia developers
+// Copyright (c) 2017-2018 The hello developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -20,18 +20,18 @@ BitcoinUnits::BitcoinUnits(QObject* parent) : QAbstractListModel(parent),
 QList<BitcoinUnits::Unit> BitcoinUnits::availableUnits()
 {
     QList<BitcoinUnits::Unit> unitlist;
-    unitlist.append(AMNZ);
-    unitlist.append(mAMNZ);
-    unitlist.append(uAMNZ);
+    unitlist.append(SIRAJ);
+    unitlist.append(mSIRAJ);
+    unitlist.append(uSIRAJ);
     return unitlist;
 }
 
 bool BitcoinUnits::valid(int unit)
 {
     switch (unit) {
-    case AMNZ:
-    case mAMNZ:
-    case uAMNZ:
+    case SIRAJ:
+    case mSIRAJ:
+    case uSIRAJ:
         return true;
     default:
         return false;
@@ -41,12 +41,12 @@ bool BitcoinUnits::valid(int unit)
 QString BitcoinUnits::id(int unit)
 {
     switch (unit) {
-    case AMNZ:
-        return QString("amnz");
-    case mAMNZ:
-        return QString("mamnz");
-    case uAMNZ:
-        return QString::fromUtf8("uamnz");
+    case SIRAJ:
+        return QString("hello");
+    case mSIRAJ:
+        return QString("mhello");
+    case uSIRAJ:
+        return QString::fromUtf8("uhello");
     default:
         return QString("???");
     }
@@ -56,23 +56,23 @@ QString BitcoinUnits::name(int unit)
 {
     if (Params().NetworkID() == CBaseChainParams::MAIN) {
         switch (unit) {
-        case AMNZ:
-            return QString("AMNZ");
-        case mAMNZ:
-            return QString("mAMNZ");
-        case uAMNZ:
-            return QString::fromUtf8("μAMNZ");
+        case SIRAJ:
+            return QString("SIRAJ");
+        case mSIRAJ:
+            return QString("mSIRAJ");
+        case uSIRAJ:
+            return QString::fromUtf8("μSIRAJ");
         default:
             return QString("???");
         }
     } else {
         switch (unit) {
-        case AMNZ:
-            return QString("tAMNZ");
-        case mAMNZ:
-            return QString("mtAMNZ");
-        case uAMNZ:
-            return QString::fromUtf8("μtAMNZ");
+        case SIRAJ:
+            return QString("tSIRAJ");
+        case mSIRAJ:
+            return QString("mtSIRAJ");
+        case uSIRAJ:
+            return QString::fromUtf8("μtSIRAJ");
         default:
             return QString("???");
         }
@@ -83,23 +83,23 @@ QString BitcoinUnits::description(int unit)
 {
     if (Params().NetworkID() == CBaseChainParams::MAIN) {
         switch (unit) {
-        case AMNZ:
-            return QString("AMNZ");
-        case mAMNZ:
-            return QString("Milli-AMNZ (1 / 1" THIN_SP_UTF8 "000)");
-        case uAMNZ:
-            return QString("Micro-AMNZ (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+        case SIRAJ:
+            return QString("SIRAJ");
+        case mSIRAJ:
+            return QString("Milli-SIRAJ (1 / 1" THIN_SP_UTF8 "000)");
+        case uSIRAJ:
+            return QString("Micro-SIRAJ (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
         default:
             return QString("???");
         }
     } else {
         switch (unit) {
-        case AMNZ:
-            return QString("TestAMNZs");
-        case mAMNZ:
-            return QString("Milli-TestAMNZ (1 / 1" THIN_SP_UTF8 "000)");
-        case uAMNZ:
-            return QString("Micro-TestAMNZ (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+        case SIRAJ:
+            return QString("TestSIRAJs");
+        case mSIRAJ:
+            return QString("Milli-TestSIRAJ (1 / 1" THIN_SP_UTF8 "000)");
+        case uSIRAJ:
+            return QString("Micro-TestSIRAJ (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
         default:
             return QString("???");
         }
@@ -109,11 +109,11 @@ QString BitcoinUnits::description(int unit)
 qint64 BitcoinUnits::factor(int unit)
 {
     switch (unit) {
-    case AMNZ:
+    case SIRAJ:
         return 100000000;
-    case mAMNZ:
+    case mSIRAJ:
         return 100000;
-    case uAMNZ:
+    case uSIRAJ:
         return 100;
     default:
         return 100000000;
@@ -123,11 +123,11 @@ qint64 BitcoinUnits::factor(int unit)
 int BitcoinUnits::decimals(int unit)
 {
     switch (unit) {
-    case AMNZ:
+    case SIRAJ:
         return 8;
-    case mAMNZ:
+    case mSIRAJ:
         return 5;
-    case uAMNZ:
+    case uSIRAJ:
         return 2;
     default:
         return 0;

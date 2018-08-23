@@ -168,7 +168,7 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources>
-  <include location="../amnesia.qrc"/>
+  <include location="../hello.qrc"/>
  </resources>
  <connections/>
 </ui>

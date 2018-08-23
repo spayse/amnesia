@@ -1,23 +1,19 @@
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
+// Copyright (c) 2017-2018 The hello developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "init.h"
 #include "main.h"
 
-#include "activemasternode.h"
 #include "addrman.h"
 #include "masternode-budget.h"
 #include "masternode-sync.h"
-#include "masternode-helpers.h"
-#include "masternodeconfig.h"
 #include "masternode.h"
 #include "masternodeman.h"
+#include "obfuscation.h"
 #include "util.h"
-#include "wallet.h"
-#include "spork.h"
-
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 
@@ -32,8 +28,8 @@ int nSubmittedFinalBudget;
 
 int GetBudgetPaymentCycleBlocks()
 {
-    // Amount of blocks in a months period of time (using 1 minutes per) = (60*24*30)
-    if (Params().NetworkID() == CBaseChainParams::MAIN) return 43200;
+    // Amount of blocks in a months period of time (using 150 seconds per) = (24*24*30)
+    if (Params().NetworkID() == CBaseChainParams::MAIN) return 17280;
     //for testing purposes
 
     return 144; //ten times per day
@@ -611,7 +607,7 @@ bool CBudgetManager::IsBudgetPaymentBlock(int nBlockHeight)
         ++it;
     }
 
-    LogPrint("masternode","CBudgetManager::IsBudgetPaymentBlock() - nHighestCount: %lli, 5%% of Masternodes: %lli. Number of budgets: %lli\n",
+    LogPrint("masternode","CBudgetManager::IsBudgetPaymentBlock() - nHighestCount: %lli, 5%% of Masternodes: %lli. Number of budgets: %lli\n", 
               nHighestCount, nFivePercent, mapFinalizedBudgets.size());
 
     // If budget doesn't have 5% of the network votes, then we should pay a masternode instead
@@ -642,7 +638,7 @@ bool CBudgetManager::IsTransactionValid(const CTransaction& txNew, int nBlockHei
         ++it;
     }
 
-    LogPrint("masternode","CBudgetManager::IsTransactionValid() - nHighestCount: %lli, 5%% of Masternodes: %lli mapFinalizedBudgets.size(): %ld\n",
+    LogPrint("masternode","CBudgetManager::IsTransactionValid() - nHighestCount: %lli, 5%% of Masternodes: %lli mapFinalizedBudgets.size(): %ld\n", 
               nHighestCount, nFivePercent, mapFinalizedBudgets.size());
     /*
         If budget doesn't have 5% of the network votes, then we should pay a masternode instead
@@ -842,61 +838,40 @@ CAmount CBudgetManager::GetTotalBudget(int nHeight)
         CAmount nSubsidy = 500 * COIN;
         return ((nSubsidy / 100) * 10) * 146;
     }
-
-    if (nHeight <= Params().LAST_POW_BLOCK())
-        return 0;
-
+	
     //get block value and calculate from that
     CAmount nSubsidy = 0;
-
-    if (nHeight > Params().LAST_POW_BLOCK() && nHeight <= GetSporkValue(SPORK_19_3000_COLLATERAL_BLOCK)) {
-        nSubsidy = 7.93 * COIN;
-    } else if (nHeight <= GetSporkValue(SPORK_17_REWARDS_SWITCH)) {
-        nSubsidy = 1.05 * COIN;
-    } else if (nHeight <= GetSporkValue(SPORK_20_4000_COLLATERAL_BLOCK)) {
-        nSubsidy = 12.23 * COIN;
-    } else if (nHeight <= GetSporkValue(SPORK_21_4200_COLLATERAL_BLOCK)) {
-        nSubsidy = 13.07 * COIN;
-    } else if (nHeight <= GetSporkValue(SPORK_22_4550_COLLATERAL_BLOCK)) {
-        nSubsidy = 13.81 * COIN;
-    } else if (nHeight <= GetSporkValue(SPORK_23_4750_COLLATERAL_BLOCK)) {
-        nSubsidy = 14.65 * COIN;
-    } else if (nHeight <= GetSporkValue(SPORK_24_4950_COLLATERAL_BLOCK)) {
-        nSubsidy = 15.07 * COIN;
-    } else if (nHeight <= GetSporkValue(SPORK_25_5150_COLLATERAL_BLOCK)) {
-        nSubsidy = 16.01 * COIN;
-    } else if (nHeight <= GetSporkValue(SPORK_26_5350_COLLATERAL_BLOCK)) {
-        nSubsidy = 16.75 * COIN;
-    } else if (nHeight <= GetSporkValue(SPORK_27_5600_COLLATERAL_BLOCK)) {
-        nSubsidy = 17.48 * COIN;
-    } else if (nHeight <= GetSporkValue(SPORK_28_5850_COLLATERAL_BLOCK)) {
-        nSubsidy = 18.11 * COIN;
-    } else if (nHeight <= GetSporkValue(SPORK_29_6150_COLLATERAL_BLOCK)) {
-        nSubsidy = 18.9 * COIN;
-    } else if (nHeight <= GetSporkValue(SPORK_30_6400_COLLATERAL_BLOCK)) {
-        nSubsidy = 19.58 * COIN;
-    } else if (nHeight <= GetSporkValue(SPORK_31_6750_COLLATERAL_BLOCK)) {
-        nSubsidy = 20.06 * COIN;
-    } else if (nHeight <= GetSporkValue(SPORK_32_7050_COLLATERAL_BLOCK)) {
-        nSubsidy = 20.9 * COIN;
-    } else if (nHeight <= GetSporkValue(SPORK_33_7400_COLLATERAL_BLOCK)) {
-        nSubsidy = 21.26 * COIN;
-    } else if (nHeight <= GetSporkValue(SPORK_34_7800_COLLATERAL_BLOCK)) {
-        nSubsidy = 21.31 * COIN;
-    } else if (nHeight <= GetSporkValue(SPORK_35_8200_COLLATERAL_BLOCK)) {
-        nSubsidy = 21.53 * COIN;
-    } else if (nHeight <= GetSporkValue(SPORK_36_8600_COLLATERAL_BLOCK)) {
-        nSubsidy = 21.79 * COIN;
-    } else if (nHeight <= GetSporkValue(SPORK_37_9200_COLLATERAL_BLOCK)) {
-        nSubsidy = 22.94 * COIN;
-    } else if (nHeight > GetSporkValue(SPORK_37_9200_COLLATERAL_BLOCK)) {
-        nSubsidy = 23.1 * COIN;
+    if (nHeight <= Params().LAST_POW_BLOCK() && nHeight >= 210240) {
+        nSubsidy = 0 * COIN;
+	} else if (nHeight <= Params().LAST_POW_BLOCK() && nHeight < 210240) {
+		nSubsidy = 0 * COIN;
+    } else if (nHeight <= 682559 && nHeight > Params().LAST_POW_BLOCK()) {
+        nSubsidy = 0 * COIN;
+    } else if (nHeight <= 734399 && nHeight >= 682560) {
+        nSubsidy = 0.* COIN;
+    } else if (nHeight <= 786239 && nHeight >= 734400) {
+        nSubsidy = 0 * COIN;
+    } else if (nHeight <= 838079 && nHeight >= 786240) {
+        nSubsidy = 0 * COIN;
+    } else if (nHeight <= 889919 && nHeight >= 838080) {
+        nSubsidy = 0 * COIN;
+    } else if (nHeight <= 941759 && nHeight >= 889920) {
+        nSubsidy = 0 * COIN;
+    } else if (nHeight <= 993599 && nHeight >= 941760) {
+        nSubsidy = 0 * COIN;
+    } else if (nHeight <= 1045439 && nHeight >= 993600) {
+        nSubsidy = 0 * COIN;
+    } else if (nHeight <= 1097279 && nHeight >= 1045440) {
+        nSubsidy = 0 * COIN;
+	} else if (nHeight <= 1149119 && nHeight >= 1097280) {
+        nSubsidy = 0 * COIN;
+    } else if (nHeight >= 1149120) {
+        nSubsidy = 0 * COIN;
     } else {
         nSubsidy = 0 * COIN;
     }
 
-    // Amount of blocks in a months period of time (using 1 minutes per) = (60*24*30)
-    return ((nSubsidy / 100) * 10) * 1440 * 30;
+    return ((nSubsidy / 100) * 10) * 576 * 30;
 }
 
 void CBudgetManager::NewBlock()
@@ -916,7 +891,7 @@ void CBudgetManager::NewBlock()
     // incremental sync with our peers
     if (masternodeSync.IsSynced()) {
         LogPrint("masternode","CBudgetManager::NewBlock - incremental sync started\n");
-        if (chainActive.Height() % 1440 == rand() % 1440) {
+        if (chainActive.Height() % 576 == rand() % 576) {
             ClearSeen();
             ResetSync();
         }
@@ -1709,12 +1684,12 @@ bool CBudgetVote::Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode)
     std::string errorMessage;
     std::string strMessage = vin.prevout.ToStringShort() + nProposalHash.ToString() + boost::lexical_cast<std::string>(nVote) + boost::lexical_cast<std::string>(nTime);
 
-    if (!masternodeSigner.SignMessage(strMessage, errorMessage, vchSig, keyMasternode)) {
+    if (!obfuScationSigner.SignMessage(strMessage, errorMessage, vchSig, keyMasternode)) {
         LogPrint("masternode","CBudgetVote::Sign - Error upon calling SignMessage");
         return false;
     }
 
-    if (!masternodeSigner.VerifyMessage(pubKeyMasternode, vchSig, strMessage, errorMessage)) {
+    if (!obfuScationSigner.VerifyMessage(pubKeyMasternode, vchSig, strMessage, errorMessage)) {
         LogPrint("masternode","CBudgetVote::Sign - Error upon calling VerifyMessage");
         return false;
     }
@@ -1738,7 +1713,7 @@ bool CBudgetVote::SignatureValid(bool fSignatureCheck)
 
     if (!fSignatureCheck) return true;
 
-    if (!masternodeSigner.VerifyMessage(pmn->pubKeyMasternode, vchSig, strMessage, errorMessage)) {
+    if (!obfuScationSigner.VerifyMessage(pmn->pubKeyMasternode, vchSig, strMessage, errorMessage)) {
         LogPrint("masternode","CBudgetVote::SignatureValid() - Verify message failed\n");
         return false;
     }
@@ -2060,7 +2035,7 @@ void CFinalizedBudget::SubmitVote()
     CKey keyMasternode;
     std::string errorMessage;
 
-    if (!masternodeSigner.SetKey(strMasterNodePrivKey, errorMessage, keyMasternode, pubKeyMasternode)) {
+    if (!obfuScationSigner.SetKey(strMasterNodePrivKey, errorMessage, keyMasternode, pubKeyMasternode)) {
         LogPrint("masternode","CFinalizedBudget::SubmitVote - Error upon calling SetKey\n");
         return;
     }
@@ -2153,12 +2128,12 @@ bool CFinalizedBudgetVote::Sign(CKey& keyMasternode, CPubKey& pubKeyMasternode)
     std::string errorMessage;
     std::string strMessage = vin.prevout.ToStringShort() + nBudgetHash.ToString() + boost::lexical_cast<std::string>(nTime);
 
-    if (!masternodeSigner.SignMessage(strMessage, errorMessage, vchSig, keyMasternode)) {
+    if (!obfuScationSigner.SignMessage(strMessage, errorMessage, vchSig, keyMasternode)) {
         LogPrint("masternode","CFinalizedBudgetVote::Sign - Error upon calling SignMessage");
         return false;
     }
 
-    if (!masternodeSigner.VerifyMessage(pubKeyMasternode, vchSig, strMessage, errorMessage)) {
+    if (!obfuScationSigner.VerifyMessage(pubKeyMasternode, vchSig, strMessage, errorMessage)) {
         LogPrint("masternode","CFinalizedBudgetVote::Sign - Error upon calling VerifyMessage");
         return false;
     }
@@ -2181,7 +2156,7 @@ bool CFinalizedBudgetVote::SignatureValid(bool fSignatureCheck)
 
     if (!fSignatureCheck) return true;
 
-    if (!masternodeSigner.VerifyMessage(pmn->pubKeyMasternode, vchSig, strMessage, errorMessage)) {
+    if (!obfuScationSigner.VerifyMessage(pmn->pubKeyMasternode, vchSig, strMessage, errorMessage)) {
         LogPrint("masternode","CFinalizedBudgetVote::SignatureValid() - Verify message failed %s %s\n", strMessage, errorMessage);
         return false;
     }

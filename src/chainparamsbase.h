@@ -9,8 +9,8 @@
 #include <vector>
 
 /**
- * CBaseChainParams defines the base parameters (shared between amnesia-cli and amnesiad)
- * of a given instance of the Amnesia system.
+ * CBaseChainParams defines the base parameters (shared between hello-cli and hellod)
+ * of a given instance of the hello system.
  */
 class CBaseChainParams
 {
